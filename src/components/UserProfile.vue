@@ -9,6 +9,23 @@
         <strong>Followers: </strong>{{ followers }}
         <button @click="followUser">Follow</button>
       </div>
+      <form class="user-profile__create-twoot" @submit.prevent="createNewTwoot">
+        <label for="newTwoot"><strong>New Twoot</strong></label>
+        <textarea id="newTwoot" rows="4" v-model="newTwootContent"></textarea>
+        <div class="user-profile__create-twoot-type">
+          <label for="newTwootType"><strong>Type: </strong></label>
+          <select id="newTwootType" v-model="selectedTwootType">
+            <option
+              :value="option.value"
+              v-for="(option, index) in twootTypes"
+              :key="index"
+            >
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
+        <button>Twoot!</button>
+      </form>
     </div>
     <div class="user-profile__twoots-wrapper">
       <twoot-item
@@ -31,6 +48,12 @@ export default {
   },
   data() {
     return {
+      newTwootContent: "",
+      selectedTwootType: "instant",
+      twootTypes: [
+        { value: "draft", name: "Draft" },
+        { value: "instant", name: "Instant" },
+      ],
       followers: 0,
       user: {
         id: 1,
@@ -66,6 +89,15 @@ export default {
     toggleFav(id) {
       console.log(`Favourite Twoot #${id}`);
     },
+    createNewTwoot() {
+      if (this.newTwootContent && this.selectedTwootType !== "draft") {
+        this.user.twoots.unshift({
+          id: this.user.twoots.length + 1,
+          content: this.newTwootContent,
+        });
+        this.newTwootContent = "";
+      }
+    },
   },
   mounted() {
     this.followUser();
@@ -75,10 +107,11 @@ export default {
 
 <style>
 .user-profile {
-  display: grid;
+  display: flex;
   grid-template-columns: 1fr 3fr;
   width: 100%;
   padding: 50px 5%;
+  margin-top: 20px;
 }
 
 .user-profile__user-panel {
@@ -90,7 +123,7 @@ export default {
   background-color: white;
   border-radius: 5px;
   border: 1px solid #dfe3e8;
-  width: 200px;
+  flex-direction: column;
   margin-bottom: 10px;
 }
 
@@ -101,6 +134,24 @@ export default {
   margin-right: auto;
   padding: 0 10px;
   font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.user-profile__follower-count {
+  padding-bottom: 10px;
+}
+
+.user-profile__create-twoot {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  border-top: #dfe3e8 1px solid;
+  margin-bottom: 10px;
+}
+
+.user-profile__create-twoot-type {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 h2 {
